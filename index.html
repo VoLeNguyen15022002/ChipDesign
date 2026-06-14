@@ -3,30 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VLSI Interactive Simulation - Giai đoạn 1</title>
+    <title>VLSI Self-Study Hub</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- KaTeX for math rendering -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMath()"></script>
     
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --panel-bg: rgba(20, 26, 43, 0.7);
-            --card-bg: rgba(30, 39, 63, 0.5);
-            --accent-primary: #6366f1; /* Indigo */
+            --bg-color: #080c14;
+            --panel-bg: rgba(15, 22, 42, 0.65);
+            --card-bg: rgba(30, 41, 59, 0.4);
+            --accent-primary: #818cf8; /* Light Indigo */
             --accent-secondary: #06b6d4; /* Cyan */
             --accent-success: #10b981; /* Green */
-            --accent-danger: #ef4444; /* Red */
-            --accent-warning: #f59e0b; /* Amber */
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
             --border-color: rgba(255, 255, 255, 0.08);
-            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
+            --shadow-glow: 0 0 30px rgba(129, 140, 248, 0.15);
         }
 
         * {
@@ -38,1246 +32,218 @@
         body {
             font-family: 'Outfit', sans-serif;
             background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
             color: var(--text-main);
-            overflow: hidden;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        /* Header */
+        .hub-container {
+            max-width: 1000px;
+            width: 100%;
+            text-align: center;
+            z-index: 2;
+        }
+
         header {
-            background-color: rgba(11, 15, 25, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 10;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            margin-bottom: 50px;
         }
 
         .logo-icon {
-            font-size: 24px;
+            font-size: 54px;
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            animation: pulse 3s infinite alternate;
         }
 
-        .logo-text h1 {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+        @keyframes pulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(129,140,248,0.2)); }
+            100% { transform: scale(1.05); filter: drop-shadow(0 0 15px rgba(6,182,212,0.4)); }
         }
 
-        .logo-text span {
-            font-size: 12px;
-            color: var(--accent-secondary);
-            font-weight: 500;
-        }
-
-        .header-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.3s;
-        }
-
-        .header-links a:hover {
-            color: var(--text-main);
-        }
-
-        /* Container Layout */
-        .main-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Document Pane (Left) */
-        .doc-pane {
-            flex: 1;
-            overflow-y: auto;
-            padding: 40px;
-            border-right: 1px solid var(--border-color);
-            background-color: rgba(15, 23, 42, 0.3);
-            scroll-behavior: smooth;
-        }
-
-        /* Custom Scrollbar for Doc Pane */
-        .doc-pane::-webkit-scrollbar {
-            width: 8px;
-        }
-        .doc-pane::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.1);
-        }
-        .doc-pane::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 4px;
-        }
-        .doc-pane::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        /* Simulation Pane (Right) */
-        .sim-pane {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--panel-bg);
-            backdrop-filter: blur(10px);
-            overflow: hidden;
-        }
-
-        /* Document Styling */
-        .doc-content h1 {
-            font-size: 26px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #fff, #94a3b8);
+        h1 {
+            font-size: 36px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ffffff, #cbd5e1);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            border-left: 4px solid var(--accent-primary);
-            padding-left: 12px;
         }
 
-        .doc-content h2 {
-            font-size: 20px;
-            margin-top: 35px;
-            margin-bottom: 15px;
-            color: var(--accent-secondary);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-        }
-
-        .doc-content h3 {
+        .subtitle {
             font-size: 16px;
-            margin-top: 25px;
-            margin-bottom: 12px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .doc-content p {
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 15px;
-            color: #d1d5db;
-        }
-
-        .doc-content ul {
-            margin-left: 20px;
-            margin-bottom: 15px;
-        }
-
-        .doc-content li {
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 6px;
-            color: #d1d5db;
-        }
-
-        .doc-content code {
-            font-family: 'JetBrains Mono', monospace;
-            background: rgba(255, 255, 255, 0.06);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 13.5px;
-            color: #f472b6;
-        }
-
-        .doc-content pre {
-            font-family: 'JetBrains Mono', monospace;
-            background: #080c14;
-            padding: 20px;
-            border-radius: 8px;
-            overflow-x: auto;
-            border: 1px solid var(--border-color);
-            margin: 20px 0;
-        }
-
-        .doc-content pre code {
-            background: transparent;
-            padding: 0;
-            color: #e2e8f0;
-            font-size: 13px;
-        }
-
-        .doc-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        .doc-content th, .doc-content td {
-            border: 1px solid var(--border-color);
-            padding: 10px 12px;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        .doc-content th {
-            background-color: rgba(255, 255, 255, 0.04);
-            font-weight: 600;
-        }
-
-        .doc-content tr:nth-child(even) {
-            background-color: rgba(255, 255, 255, 0.01);
-        }
-
-        /* Alerts */
-        .info-box {
-            background: rgba(99, 102, 241, 0.08);
-            border-left: 4px solid var(--accent-primary);
-            padding: 16px;
-            border-radius: 0 8px 8px 0;
-            margin: 20px 0;
-        }
-        .info-box p {
-            margin-bottom: 0;
-            font-size: 14px;
-        }
-
-        /* Tab Navigation for Simulator */
-        .sim-tabs {
-            display: flex;
-            background-color: rgba(11, 15, 25, 0.4);
-            border-bottom: 1px solid var(--border-color);
-            padding: 0 20px;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
             color: var(--text-muted);
-            padding: 15px 20px;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Hub Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .hub-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 35px 30px;
+            text-align: left;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
-            transition: color 0.3s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            backdrop-filter: blur(12px);
+            text-decoration: none;
+            color: inherit;
         }
 
-        .tab-btn:hover {
-            color: var(--text-main);
-        }
-
-        .tab-btn.active {
-            color: var(--accent-secondary);
-        }
-
-        .tab-btn.active::after {
+        .hub-card::before {
             content: '';
             position: absolute;
-            bottom: -1px;
+            top: 0;
             left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-        }
-
-        /* Tab Contents */
-        .sim-content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-            display: none;
-        }
-
-        .sim-content.active {
-            display: block;
-        }
-
-        .sim-title-box {
-            margin-bottom: 20px;
-        }
-
-        .sim-title-box h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .sim-title-box p {
-            font-size: 13.5px;
-            color: var(--text-muted);
-        }
-
-        /* Widgets & Simulation Visuals */
-        .visualizer-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow-glow);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 280px;
-        }
-
-        .controls-card {
-            background-color: rgba(20, 26, 43, 0.4);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        /* Buttons & Inputs */
-        .toggle-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: 600;
-            transition: all 0.3s;
-            font-size: 13.5px;
-        }
-
-        .toggle-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .toggle-btn.active {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            border-color: transparent;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        /* CMOS NAND SVG Styles */
-        .wire {
-            stroke: #475569;
-            stroke-width: 3;
-            fill: none;
-            transition: stroke 0.3s, stroke-width 0.3s;
-        }
-        .wire-active {
-            stroke: var(--accent-warning);
-            stroke-width: 4;
-        }
-        .wire-gnd {
-            stroke: var(--accent-secondary);
-            stroke-width: 3;
-        }
-        .wire-active-gnd {
-            stroke: #14b8a6;
-            stroke-width: 4;
-        }
-        .transistor-box {
-            fill: rgba(30, 41, 59, 0.8);
-            stroke: #64748b;
-            stroke-width: 2;
-            transition: fill 0.3s, stroke 0.3s;
-        }
-        .transistor-box.on {
-            fill: rgba(16, 185, 129, 0.2);
-            stroke: var(--accent-success);
-            filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.4));
-        }
-        .transistor-box.off {
-            fill: rgba(239, 68, 68, 0.15);
-            stroke: var(--accent-danger);
-        }
-        .node-label {
-            font-family: 'Outfit', sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            fill: var(--text-main);
-        }
-
-        /* TG D-Latch styles */
-        .tg-symbol {
-            fill: rgba(15, 23, 42, 0.8);
-            stroke: #64748b;
-            stroke-width: 2;
-            transition: stroke 0.3s;
-        }
-        .tg-symbol.active {
-            stroke: var(--accent-success);
-            fill: rgba(16, 185, 129, 0.1);
-        }
-        .tg-symbol.inactive {
-            stroke: var(--accent-danger);
-            fill: rgba(239, 68, 68, 0.05);
-        }
-
-        /* FSM state styles */
-        .state-node {
-            fill: rgba(30, 41, 59, 0.9);
-            stroke: #475569;
-            stroke-width: 2.5;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .state-node.active {
-            fill: rgba(99, 102, 241, 0.3);
-            stroke: var(--accent-primary);
-            stroke-width: 4;
-            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.6));
-        }
-        .state-text {
-            fill: var(--text-main);
-            font-family: 'Outfit', sans-serif;
-            font-size: 13px;
-            font-weight: 600;
-            text-anchor: middle;
-            dominant-baseline: middle;
-        }
-        .transition-arrow {
-            fill: none;
-            stroke: #475569;
-            stroke-width: 1.5;
-            marker-end: url(#arrow);
-            transition: stroke 0.3s, stroke-width 0.3s;
-        }
-        .transition-arrow.active {
-            stroke: var(--accent-secondary);
-            stroke-width: 2.5;
-        }
-
-        /* STA Layout */
-        .sta-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        .sta-slider-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-        .sta-slider-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13.5px;
-            font-weight: 500;
-        }
-        .sta-slider-val {
-            color: var(--accent-secondary);
-            font-family: 'JetBrains Mono', monospace;
-        }
-        input[type="range"] {
-            -webkit-appearance: none;
             width: 100%;
-            height: 6px;
-            background: #1e293b;
-            border-radius: 3px;
-            outline: none;
-            border: none;
-        }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: var(--accent-primary);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
-        /* Slack results dashboard */
-        .slack-dashboard {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
+        .hub-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(129, 140, 248, 0.3);
+            box-shadow: var(--shadow-glow);
         }
-        .slack-card {
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 16px;
-            text-align: center;
+
+        .hub-card:hover::before {
+            opacity: 1;
         }
-        .slack-card-title {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
+
+        .card-icon {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: var(--accent-secondary);
         }
-        .slack-value {
-            font-size: 24px;
-            font-weight: 700;
-            font-family: 'JetBrains Mono', monospace;
-            margin-bottom: 4px;
+
+        .hub-card:hover .card-icon {
+            animation: bounce 0.5s ease-in-out;
         }
-        .slack-status {
-            font-size: 12px;
-            font-weight: 600;
-            padding: 2px 8px;
-            border-radius: 20px;
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .card-tag {
             display: inline-block;
-        }
-        .slack-met {
-            color: var(--accent-success);
-            background: rgba(16, 185, 129, 0.15);
-        }
-        .slack-violated {
-            color: var(--accent-danger);
-            background: rgba(239, 68, 68, 0.15);
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--accent-primary);
+            margin-bottom: 10px;
         }
 
-        .fmax-banner {
-            grid-column: 1 / -1;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(6, 182, 212, 0.1));
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 10px;
-            padding: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .card-desc {
             font-size: 14px;
-            font-weight: 500;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+            flex: 1;
+        }
+
+        .card-link {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: gap 0.2s;
+            margin-top: auto;
+        }
+
+        .hub-card:hover .card-link {
+            color: var(--accent-secondary);
+            gap: 12px;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 60px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
-    <header>
-        <div class="logo-area">
+    <div class="hub-container">
+        <header>
             <i class="fa-solid fa-microchip logo-icon"></i>
-            <div class="logo-text">
-                <h1>VLSI DESIGN SIMULATOR</h1>
-                <span>Giai đoạn 1: Điện tử số nâng cao & STA</span>
-            </div>
-        </div>
-        <div class="header-links">
-            <a href="https://github.com/VoLeNguyen15022002/ChipDesign" target="_blank">
-                <i class="fa-brands fa-github"></i> VoLeNguyen15022002/ChipDesign
+            <h1>VLSI & IC DESIGN SELF-STUDY</h1>
+            <p class="subtitle">Cổng thông tin tự học thiết kế vi mạch chuyên sâu từ lý thuyết nền tảng đến các mô phỏng tương tác trên Silicon.</p>
+        </header>
+
+        <div class="cards-grid">
+            <!-- Giai đoạn 1 Card -->
+            <a href="VLSI_Simulation_Giai_doan_1.html" class="hub-card">
+                <span class="card-tag">Tuần 1 - 2</span>
+                <i class="fa-solid fa-gauge-high card-icon"></i>
+                <h2>Giai đoạn 1: Nền tảng & Timing</h2>
+                <p class="card-desc">Điện tử số nâng cao cấp độ Transistor, phân tích Setup/Hold Time, Metastability, phân tích CDC và mô phỏng tương tác STA Slack Calculator.</p>
+                <span class="card-link">
+                    Vào học Giai đoạn 1 <i class="fa-solid fa-arrow-right"></i>
+                </span>
+            </a>
+
+            <!-- Giai đoạn 2 Card -->
+            <a href="VLSI_Simulation_Giai_doan_2.html" class="hub-card">
+                <span class="card-tag">Tuần 3 - 6</span>
+                <i class="fa-solid fa-code card-icon" style="color: var(--accent-primary);"></i>
+                <h2>Giai đoạn 2: HDL & Ngoại vi nhúng</h2>
+                <p class="card-desc">Làm chủ ngôn ngữ mô tả phần cứng Verilog HDL, FSM 3 khối tối ưu, thiết kế các IP ngoại vi UART, SPI Master và Timer Auto-reload kèm mạch mô phỏng chạy trực tiếp.</p>
+                <span class="card-link">
+                    Vào học Giai đoạn 2 <i class="fa-solid fa-arrow-right"></i>
+                </span>
             </a>
         </div>
-    </header>
 
-    <!-- Main Container -->
-    <div class="main-container">
-
-        <!-- Left Column: Document Reader -->
-        <div class="doc-pane">
-            <article class="doc-content">
-                <h1>TÀI LIỆU CHUYÊN SÂU: GIAI ĐOẠN 1</h1>
-                <p>Chào mừng bạn đến với tài liệu học tập kết hợp mô phỏng tương tác trực quan cho Tuần 1 & Tuần 2 thuộc lộ trình đào tạo thiết kế vi mạch.</p>
-
-                <h2>📚 TUẦN 1: ĐIỆN TỬ SỐ NÂNG CAO</h2>
-                
-                <h3>1. Mạch tổ hợp (Combinational) và Mạch tuần tự (Sequential)</h3>
-                <p>Mạch logic số được xây dựng từ các bóng bán dẫn <strong>NMOS</strong> và <strong>PMOS</strong> làm việc ở chế độ đóng/ngắt.</p>
-                <ul>
-                    <li><strong>Mạch tổ hợp (Combinational):</strong> Ngõ ra phụ thuộc hoàn toàn vào các ngõ vào hiện tại. Cổng logic CMOS cơ bản gồm mạng kéo lên (PUN) bằng PMOS và mạng kéo xuống (PDN) bằng NMOS đối ngẫu.</li>
-                    <li><strong>Mạch tuần tự (Sequential):</strong> Bắt buộc có vòng lặp phản hồi để lưu trữ trạng thái trước đó (ví dụ SR Latch).</li>
-                </ul>
-
-                <div class="info-box">
-                    <p>💡 <strong>Gợi ý mô phỏng:</strong> Chuyển sang Tab <strong>"CMOS NAND"</strong> bên phải để thay đổi mức logic ngõ vào và xem trực tiếp trạng thái dẫn dòng điện qua các bóng bán dẫn NMOS/PMOS.</p>
-                </div>
-
-                <h3>2. Cấu trúc Vật lý: Latch vs. Flip-Flop</h3>
-                <p>Cổng truyền CMOS (Transmission Gate - TG) cho phép dẫn thông hai chiều hoàn hảo khi được kích hoạt. Bằng cách kết hợp cổng truyền và các cổng đảo, ta thiết kế được:</p>
-                <ul>
-                    <li><strong>D-Latch:</strong> Hoạt động nhạy theo mức (transparent khi CLK cao, hold khi CLK thấp).</li>
-                    <li><strong>D-Flip-Flop:</strong> Ghép nối tiếp Master Latch và Slave Latch, giúp dữ liệu chỉ thay đổi chính xác tại sườn xung nhịp (Clock Edge).</li>
-                </ul>
-
-                <div class="info-box">
-                    <p>💡 <strong>Gợi ý mô phỏng:</strong> Chuyển sang Tab <strong>"D-Latch (TG)"</strong> bên phải để tương tác với xung nhịp CLK và xem cách dữ liệu được chốt giữ thông qua vòng phản hồi.</p>
-                </div>
-
-                <h3>3. FSM (Finite State Machine) & Bộ nhận diện chuỗi</h3>
-                <p>Bộ nhận diện chuỗi <strong>"1101"</strong> (Sequence Detector) thiết kế theo mô hình Moore FSM gồm 5 trạng thái:</p>
-                <ul>
-                    <li><strong>S0:</strong> Trạng thái rỗi (Chưa nhận bit nào).</li>
-                    <li><strong>S1:</strong> Đã nhận bit '1'.</li>
-                    <li><strong>S2:</strong> Đã nhận chuỗi '11'.</li>
-                    <li><strong>S3:</strong> Đã nhận chuỗi '110'.</li>
-                    <li><strong>S4:</strong> Đã nhận chuỗi '1101' (Ngõ ra $Y = 1$).</li>
-                </ul>
-
-                <div class="info-box">
-                    <p>💡 <strong>Gợi ý mô phỏng:</strong> Chuyển sang Tab <strong>"FSM 1101"</strong> để kiểm tra hoạt động chuyển trạng thái của FSM theo luồng bit đầu vào.</p>
-                </div>
-
-                <h2>⏱️ TUẦN 2: PHÂN TÍCH TIMING TĨNH CHUYÊN SÂU (STA)</h2>
-                
-                <h3>1. Các tham số và công thức tính Slack</h3>
-                <p>Trong phân tích tĩnh timing (STA), ta đo lường độ dư thời gian (Slack) để đảm bảo dữ liệu không bị lỗi khi được lấy mẫu bởi Flip-flop.</p>
-                <p><strong>Thời gian dữ liệu đến thực tế (Data Arrival Time):</strong></p>
-                $$T_{arrival} = T_{cq} + T_{comb}$$
-                <p><strong>Thời gian dữ liệu bắt buộc (Data Required Time) cho Setup:</strong></p>
-                $$T_{required\_setup} = T_{clk} + T_{skew} - T_{setup}$$
-                <p><strong>Setup Slack:</strong></p>
-                $$Slack_{setup} = T_{required\_setup} - T_{arrival}$$
-                <p><strong>Hold Slack:</strong></p>
-                $$Slack_{hold} = T_{cq} + T_{comb} - T_{skew} - T_{hold}$$
-
-                <div class="info-box">
-                    <p>💡 <strong>Gợi ý mô phỏng:</strong> Sử dụng Tab <strong>"STA Analyzer"</strong> để điều chỉnh các tham số thiết kế vật lý bằng thanh trượt và theo dõi trực quan các giá trị Slack thay đổi thời gian thực.</p>
-                </div>
-            </article>
-        </div>
-
-        <!-- Right Column: Interactive Simulators -->
-        <div class="sim-pane">
-            
-            <!-- Tab Buttons -->
-            <div class="sim-tabs">
-                <button class="tab-btn active" onclick="switchTab(event, 'tab-nand')">CMOS NAND</button>
-                <button class="tab-btn" onclick="switchTab(event, 'tab-latch')">D-Latch (TG)</button>
-                <button class="tab-btn" onclick="switchTab(event, 'tab-fsm')">FSM 1101</button>
-                <button class="tab-btn" onclick="switchTab(event, 'tab-sta')">STA Analyzer</button>
-            </div>
-
-            <!-- Tab 1: CMOS NAND Simulator -->
-            <div id="tab-nand" class="sim-content active">
-                <div class="sim-title-box">
-                    <h3>Mô phỏng Transistor Cổng NAND 2 Ngõ Vào</h3>
-                    <p>Nhấp vào các ngõ vào A, B bên dưới để quan sát hoạt động đóng ngắt của các MOSFET.</p>
-                </div>
-                
-                <div class="visualizer-card">
-                    <!-- SVG NAND Circuit Schematic -->
-                    <svg width="340" height="300" viewBox="0 0 340 300">
-                        <!-- Rails VDD and GND -->
-                        <line x1="80" y1="20" x2="260" y2="20" stroke="#ef4444" stroke-width="4" />
-                        <text x="50" y="25" fill="#ef4444" font-weight="bold" font-size="12">VDD (1)</text>
-
-                        <line x1="170" y1="280" x2="230" y2="280" stroke="#06b6d4" stroke-width="4" />
-                        <text x="130" y="285" fill="#06b6d4" font-weight="bold" font-size="12">GND (0)</text>
-
-                        <!-- Pull Up Network (PMOS parallel) -->
-                        <!-- PMOS A -->
-                        <rect id="pmos-a" class="transistor-box" x="100" y="50" width="50" height="50" rx="4" />
-                        <text x="125" y="79" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">PMOS A</text>
-                        <!-- PMOS B -->
-                        <rect id="pmos-b" class="transistor-box" x="190" y="50" width="50" height="50" rx="4" />
-                        <text x="215" y="79" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">PMOS B</text>
-
-                        <!-- Pull Down Network (NMOS series) -->
-                        <!-- NMOS A -->
-                        <rect id="nmos-a" class="transistor-box" x="145" y="140" width="50" height="40" rx="4" />
-                        <text x="170" y="164" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">NMOS A</text>
-                        <!-- NMOS B -->
-                        <rect id="nmos-b" class="transistor-box" x="145" y="210" width="50" height="40" rx="4" />
-                        <text x="170" y="234" fill="#94a3b8" font-size="10" font-weight="bold" text-anchor="middle">NMOS B</text>
-
-                        <!-- Wires and Path Lines -->
-                        <!-- VDD connections to PMOS -->
-                        <path id="wire-vdd-pmosa" class="wire" d="M 125,20 L 125,50" />
-                        <path id="wire-vdd-pmosb" class="wire" d="M 215,20 L 215,50" />
-                        <!-- Output Connection -->
-                        <path id="wire-out-left" class="wire" d="M 125,100 L 125,120 L 170,120" />
-                        <path id="wire-out-right" class="wire" d="M 215,100 L 215,120 L 170,120" />
-                        <path id="wire-out-nmos" class="wire" d="M 170,120 L 170,140" />
-                        
-                        <!-- Output Line Y -->
-                        <path id="wire-y" class="wire" d="M 170,120 L 290,120" />
-                        <circle cx="290" cy="120" r="5" fill="#f59e0b" />
-                        <text x="305" y="124" fill="#f59e0b" font-weight="bold" font-size="14">Y</text>
-
-                        <!-- NMOS Series connections -->
-                        <path id="wire-nmos-mid" class="wire" d="M 170,180 L 170,210" />
-                        <path id="wire-nmos-gnd" class="wire" d="M 170,250 L 170,280" />
-                    </svg>
-                </div>
-
-                <div class="controls-card">
-                    <div style="display:flex; justify-content: space-around; align-items:center;">
-                        <div>
-                            <span style="font-weight: 600; margin-right:10px;">Ngõ vào A:</span>
-                            <button id="btn-nand-a" class="toggle-btn" onclick="toggleNandInput('A')">0</button>
-                        </div>
-                        <div>
-                            <span style="font-weight: 600; margin-right:10px;">Ngõ vào B:</span>
-                            <button id="btn-nand-b" class="toggle-btn" onclick="toggleNandInput('B')">0</button>
-                        </div>
-                        <div>
-                            <span style="font-weight: 600; margin-right:10px;">Kết quả Y:</span>
-                            <span id="val-nand-y" style="font-size: 20px; font-weight:700; color: var(--accent-warning);">1</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tab 2: D-Latch Simulator -->
-            <div id="tab-latch" class="sim-content">
-                <div class="sim-title-box">
-                    <h3>Mô phỏng D-Latch dạng Cổng Truyền (Transmission Gate)</h3>
-                    <p>Thay đổi D và CLK để thấy dữ liệu đi trực tiếp (Transparent) hoặc duy trì qua vòng phản hồi (Hold).</p>
-                </div>
-
-                <div class="visualizer-card">
-                    <svg width="400" height="260" viewBox="0 0 400 260">
-                        <!-- Input and Output nodes -->
-                        <text x="30" y="94" fill="#38bdf8" font-weight="bold">D</text>
-                        <text x="360" y="94" fill="#10b981" font-weight="bold">Q</text>
-                        <text x="200" y="45" fill="#f59e0b" font-weight="bold">CLK</text>
-
-                        <!-- Wires -->
-                        <!-- D to TG1 -->
-                        <line id="latch-w1" class="wire" x1="50" y1="90" x2="100" y2="90" />
-                        <!-- TG1 to Inverter1 -->
-                        <line id="latch-w2" class="wire" x1="140" y1="90" x2="180" y2="90" />
-                        <!-- Inverter1 to Q -->
-                        <line id="latch-w3" class="wire" x1="220" y1="90" x2="350" y2="90" />
-                        
-                        <!-- Feedback path -->
-                        <!-- Q branch down -->
-                        <path id="latch-fb1" class="wire" d="M 280,90 L 280,180 L 240,180" />
-                        <!-- Inverter2 output to TG2 input -->
-                        <path id="latch-fb2" class="wire" d="M 200,180 L 160,180" />
-                        <!-- TG2 output back to forward path -->
-                        <path id="latch-fb3" class="wire" d="M 120,180 L 80,180 L 80,90" />
-
-                        <!-- Components Symbols -->
-                        <!-- TG1 -->
-                        <rect id="sym-tg1" class="tg-symbol" x="100" y="70" width="40" height="40" rx="4" />
-                        <text x="120" y="94" fill="#fff" font-size="10" text-anchor="middle" font-weight="bold">TG1</text>
-
-                        <!-- Inverter 1 -->
-                        <polygon points="180,75 180,105 210,90" fill="#1e293b" stroke="#64748b" stroke-width="2" />
-                        <circle cx="215" cy="90" r="5" fill="#1e293b" stroke="#64748b" stroke-width="2" />
-                        <text x="195" y="94" fill="#94a3b8" font-size="9" text-anchor="middle">I1</text>
-
-                        <!-- Inverter 2 (Feedback) -->
-                        <polygon points="240,165 240,195 210,180" fill="#1e293b" stroke="#64748b" stroke-width="2" />
-                        <circle cx="205" cy="180" r="5" fill="#1e293b" stroke="#64748b" stroke-width="2" />
-                        <text x="228" y="184" fill="#94a3b8" font-size="9" text-anchor="middle">I2</text>
-
-                        <!-- TG2 -->
-                        <rect id="sym-tg2" class="tg-symbol" x="120" y="160" width="40" height="40" rx="4" />
-                        <text x="140" y="184" fill="#fff" font-size="10" text-anchor="middle" font-weight="bold">TG2</text>
-                    </svg>
-                </div>
-
-                <div class="controls-card">
-                    <div style="display:flex; justify-content: space-around; align-items:center;">
-                        <div>
-                            <span style="font-weight: 600; margin-right:10px;">Dữ liệu D:</span>
-                            <button id="btn-latch-d" class="toggle-btn" onclick="toggleLatchD()">0</button>
-                        </div>
-                        <div>
-                            <span style="font-weight: 600; margin-right:10px;">Xung nhịp CLK:</span>
-                            <button id="btn-latch-clk" class="toggle-btn" onclick="toggleLatchClk()">0</button>
-                        </div>
-                        <div>
-                            <span style="font-weight: 600; margin-right:10px;">Trạng thái:</span>
-                            <span id="latch-status" style="font-weight: 700; color: var(--accent-secondary);">HOLD</span>
-                        </div>
-                        <div>
-                            <span style="font-weight: 600; margin-right:10px;">Ngõ ra Q:</span>
-                            <span id="val-latch-q" style="font-size: 20px; font-weight:700; color: var(--accent-success);">0</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tab 3: FSM 1101 Simulator -->
-            <div id="tab-fsm" class="sim-content">
-                <div class="sim-title-box">
-                    <h3>Mô phỏng FSM Moore Nhận diện Chuỗi "1101"</h3>
-                    <p>Nhập từng bit vào FSM bằng các nút 0 và 1 dưới đây để xem sự chuyển dịch trạng thái trên giản đồ.</p>
-                </div>
-
-                <div class="visualizer-card">
-                    <svg width="420" height="240" viewBox="0 0 420 240">
-                        <defs>
-                            <marker id="arrow" viewBox="0 0 10 10" refX="28" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
-                            </marker>
-                        </defs>
-                        
-                        <!-- State Nodes -->
-                        <!-- S0 (IDLE) -->
-                        <circle id="node-s0" class="state-node active" cx="60" cy="120" r="24" />
-                        <text x="60" y="120" class="state-text">S0</text>
-                        <text x="60" y="160" fill="#94a3b8" font-size="10" text-anchor="middle">IDLE</text>
-
-                        <!-- S1 (1) -->
-                        <circle id="node-s1" class="state-node" cx="140" cy="120" r="24" />
-                        <text x="140" y="120" class="state-text">S1</text>
-                        <text x="140" y="160" fill="#94a3b8" font-size="10" text-anchor="middle">"1"</text>
-
-                        <!-- S2 (11) -->
-                        <circle id="node-s2" class="state-node" cx="220" cy="120" r="24" />
-                        <text x="220" y="120" class="state-text">S2</text>
-                        <text x="220" y="160" fill="#94a3b8" font-size="10" text-anchor="middle">"11"</text>
-
-                        <!-- S3 (110) -->
-                        <circle id="node-s3" class="state-node" cx="300" cy="120" r="24" />
-                        <text x="300" y="120" class="state-text">S3</text>
-                        <text x="300" y="160" fill="#94a3b8" font-size="10" text-anchor="middle">"110"</text>
-
-                        <!-- S4 (1101) -->
-                        <circle id="node-s4" class="state-node" cx="380" cy="120" r="24" />
-                        <text x="380" y="120" class="state-text">S4</text>
-                        <text x="380" y="160" fill="#10b981" font-size="10" font-weight="bold" text-anchor="middle">"1101" (Y=1)</text>
-
-                        <!-- Transition Arrows -->
-                        <path id="arr-s0-s1" class="transition-arrow" d="M 84,120 L 116,120" />
-                        <path id="arr-s1-s2" class="transition-arrow" d="M 164,120 L 196,120" />
-                        <path id="arr-s2-s3" class="transition-arrow" d="M 244,120 L 276,120" />
-                        <path id="arr-s3-s4" class="transition-arrow" d="M 324,120 L 356,120" />
-
-                        <!-- Back loops & self loops (simplified visualization paths) -->
-                        <!-- S0 self loop -->
-                        <path class="transition-arrow" d="M 50,98 C 40,80 70,80 70,98" />
-                    </svg>
-                </div>
-
-                <div class="controls-card">
-                    <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:15px;">
-                        <div>
-                            <span style="font-weight:600;">Chuỗi đã nhập:</span>
-                            <span id="fsm-history" style="font-family:'JetBrains Mono',monospace; color:var(--accent-secondary); margin-left:8px;">-</span>
-                        </div>
-                        <div>
-                            <span style="font-weight:600;">Ngõ ra Y:</span>
-                            <span id="fsm-output" style="font-weight:700; color:var(--accent-danger); font-size:16px; margin-left:8px;">0</span>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap:12px;">
-                        <button class="toggle-btn" style="flex:1;" onclick="stepFsm(0)">Nhập bit 0</button>
-                        <button class="toggle-btn" style="flex:1;" onclick="stepFsm(1)">Nhập bit 1</button>
-                        <button class="toggle-btn" style="background:rgba(239, 68, 68, 0.1); color:var(--accent-danger); border-color:rgba(239, 68, 68, 0.2);" onclick="resetFsm()">Reset</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tab 4: STA Slack Analyzer -->
-            <div id="tab-sta" class="sim-content">
-                <div class="sim-title-box">
-                    <h3>Phân tích tĩnh Timing (Setup & Hold Slack)</h3>
-                    <p>Kéo các thanh trượt bên dưới để cấu hình các thông số trễ vật lý của vi mạch đường truyền.</p>
-                </div>
-
-                <div class="sta-grid">
-                    <!-- Sliders panel -->
-                    <div class="controls-card">
-                        <!-- Tclk -->
-                        <div class="sta-slider-group">
-                            <div class="sta-slider-header">
-                                <span>Chu kỳ xung nhịp (Tclk)</span>
-                                <span id="val-tclk" class="sta-slider-val">20.00 ns</span>
-                            </div>
-                            <input type="range" id="slide-tclk" min="5" max="30" step="0.5" value="20" oninput="updateSta()">
-                        </div>
-
-                        <!-- Tcq -->
-                        <div class="sta-slider-group">
-                            <div class="sta-slider-header">
-                                <span>Trễ Clock-to-Q (Tcq)</span>
-                                <span id="val-tcq" class="sta-slider-val">0.20 ns</span>
-                            </div>
-                            <input type="range" id="slide-tcq" min="0.05" max="2" step="0.05" value="0.20" oninput="updateSta()">
-                        </div>
-
-                        <!-- Tcomb -->
-                        <div class="sta-slider-group">
-                            <div class="sta-slider-header">
-                                <span>Trễ mạch tổ hợp (Tcomb)</span>
-                                <span id="val-tcomb" class="sta-slider-val">2.50 ns</span>
-                            </div>
-                            <input type="range" id="slide-tcomb" min="0.5" max="15" step="0.1" value="2.5" oninput="updateSta()">
-                        </div>
-
-                        <!-- Tskew -->
-                        <div class="sta-slider-group">
-                            <div class="sta-slider-header">
-                                <span>Clock Skew (Tskew)</span>
-                                <span id="val-tskew" class="sta-slider-val">-0.05 ns</span>
-                            </div>
-                            <input type="range" id="slide-tskew" min="-2" max="2" step="0.05" value="-0.05" oninput="updateSta()">
-                        </div>
-
-                        <!-- Tsetup -->
-                        <div class="sta-slider-group">
-                            <div class="sta-slider-header">
-                                <span>Thời gian Setup yêu cầu (Tsetup)</span>
-                                <span id="val-tsetup" class="sta-slider-val">0.31 ns</span>
-                            </div>
-                            <input type="range" id="slide-tsetup" min="0.05" max="2" step="0.05" value="0.31" oninput="updateSta()">
-                        </div>
-
-                        <!-- Thold -->
-                        <div class="sta-slider-group">
-                            <div class="sta-slider-header">
-                                <span>Thời gian Hold yêu cầu (Thold)</span>
-                                <span id="val-thold" class="sta-slider-val">0.20 ns</span>
-                            </div>
-                            <input type="range" id="slide-thold" min="0.05" max="2" step="0.05" value="0.20" oninput="updateSta()">
-                        </div>
-                    </div>
-
-                    <!-- Slack Output Dashboard -->
-                    <div class="slack-dashboard">
-                        <div class="slack-card">
-                            <div class="slack-card-title">Setup Slack</div>
-                            <div id="setup-slack-val" class="slack-value">16.94 ns</div>
-                            <div id="setup-status" class="slack-status slack-met">MET</div>
-                        </div>
-
-                        <div class="slack-card">
-                            <div class="slack-card-title">Hold Slack</div>
-                            <div id="hold-slack-val" class="slack-value">0.10 ns</div>
-                            <div id="hold-status" class="slack-status slack-met">MET</div>
-                        </div>
-
-                        <div class="fmax-banner">
-                            <span>Tần số hoạt động tối đa Fmax:</span>
-                            <span id="val-fmax" style="color:var(--accent-secondary); font-family:'JetBrains Mono',monospace; font-size:16px; font-weight:700;">280.9 MHz</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <footer>
+            Tài liệu học tập và mã nguồn được duy trì tại <a href="https://github.com/VoLeNguyen15022002/ChipDesign" target="_blank"><i class="fa-brands fa-github"></i> VoLeNguyen15022002/ChipDesign</a>
+        </footer>
     </div>
 
-    <!-- Script logic -->
-    <script>
-        // Tab switching logic
-        function switchTab(evt, tabId) {
-            const contents = document.getElementsByClassName('sim-content');
-            for (let i = 0; i < contents.length; i++) {
-                contents[i].classList.remove('active');
-            }
-            
-            const tabBtns = document.getElementsByClassName('tab-btn');
-            for (let i = 0; i < tabBtns.length; i++) {
-                tabBtns[i].classList.remove('active');
-            }
-            
-            document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
-        }
-
-        // Render mathematical formulas via KaTeX
-        function renderMath() {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    {left: '$$', right: '$$', display: true},
-                    {left: '$', right: '$', display: false}
-                ]
-            });
-        }
-
-        // ==========================================
-        // 1. CMOS NAND Logic & SVG Styling
-        // ==========================================
-        let nandA = 0;
-        let nandB = 0;
-
-        function toggleNandInput(node) {
-            if (node === 'A') {
-                nandA = nandA === 0 ? 1 : 0;
-                document.getElementById('btn-nand-a').innerText = nandA;
-                document.getElementById('btn-nand-a').classList.toggle('active', nandA === 1);
-            } else {
-                nandB = nandB === 0 ? 1 : 0;
-                document.getElementById('btn-nand-b').innerText = nandB;
-                document.getElementById('btn-nand-b').classList.toggle('active', nandB === 1);
-            }
-            updateNandSchematic();
-        }
-
-        function updateNandSchematic() {
-            const pmosA = document.getElementById('pmos-a');
-            const pmosb = document.getElementById('pmos-b');
-            const nmosa = document.getElementById('nmos-a');
-            const nmosb = document.getElementById('nmos-b');
-
-            // PMOS is ON when input is 0 (low)
-            const pA_on = (nandA === 0);
-            const pB_on = (nandB === 0);
-            
-            // NMOS is ON when input is 1 (high)
-            const nA_on = (nandA === 1);
-            const nB_on = (nandB === 1);
-
-            // Update classes
-            pmosA.setAttribute('class', `transistor-box ${pA_on ? 'on' : 'off'}`);
-            pmosb.setAttribute('class', `transistor-box ${pB_on ? 'on' : 'off'}`);
-            nmosa.setAttribute('class', `transistor-box ${nA_on ? 'on' : 'off'}`);
-            nmosb.setAttribute('class', `transistor-box ${nB_on ? 'on' : 'off'}`);
-
-            // Calculate output Y
-            const yOut = (!(nandA && nandB)) ? 1 : 0;
-            document.getElementById('val-nand-y').innerText = yOut;
-
-            // Highlight wires
-            const wireVddPmosa = document.getElementById('wire-vdd-pmosa');
-            const wireVddPmosb = document.getElementById('wire-vdd-pmosb');
-            const wireOutLeft = document.getElementById('wire-out-left');
-            const wireOutRight = document.getElementById('wire-out-right');
-            const wireOutNmos = document.getElementById('wire-out-nmos');
-            const wireNmosMid = document.getElementById('wire-nmos-mid');
-            const wireNmosGnd = document.getElementById('wire-nmos-gnd');
-            const wireY = document.getElementById('wire-y');
-
-            // Set wire colors based on states
-            wireVddPmosa.setAttribute('class', `wire ${pA_on ? 'wire-active' : ''}`);
-            wireVddPmosb.setAttribute('class', `wire ${pB_on ? 'wire-active' : ''}`);
-            wireOutLeft.setAttribute('class', `wire ${pA_on ? 'wire-active' : ''}`);
-            wireOutRight.setAttribute('class', `wire ${pB_on ? 'wire-active' : ''}`);
-            
-            wireNmosGnd.setAttribute('class', `wire ${nB_on ? 'wire-active-gnd' : 'wire-gnd'}`);
-            wireNmosMid.setAttribute('class', `wire ${(nA_on && nB_on) ? 'wire-active-gnd' : 'wire-gnd'}`);
-            
-            if (yOut === 1) {
-                wireY.setAttribute('class', 'wire wire-active');
-                wireOutNmos.setAttribute('class', 'wire');
-            } else {
-                wireY.setAttribute('class', 'wire wire-active-gnd');
-                wireOutNmos.setAttribute('class', 'wire wire-active-gnd');
-            }
-        }
-
-        // ==========================================
-        // 2. TG-based D-Latch Simulator
-        // ==========================================
-        let latchD = 0;
-        let latchClk = 0;
-        let latchQ = 0;
-
-        function toggleLatchD() {
-            latchD = latchD === 0 ? 1 : 0;
-            document.getElementById('btn-latch-d').innerText = latchD;
-            document.getElementById('btn-latch-d').classList.toggle('active', latchD === 1);
-            runLatchLogic();
-        }
-
-        function toggleLatchClk() {
-            latchClk = latchClk === 0 ? 1 : 0;
-            document.getElementById('btn-latch-clk').innerText = latchClk;
-            document.getElementById('btn-latch-clk').classList.toggle('active', latchClk === 1);
-            runLatchLogic();
-        }
-
-        function runLatchLogic() {
-            const statusText = document.getElementById('latch-status');
-            const qValNode = document.getElementById('val-latch-q');
-            
-            const tg1 = document.getElementById('sym-tg1');
-            const tg2 = document.getElementById('sym-tg2');
-
-            // Wire elements
-            const w1 = document.getElementById('latch-w1');
-            const w2 = document.getElementById('latch-w2');
-            const w3 = document.getElementById('latch-w3');
-            const fb1 = document.getElementById('latch-fb1');
-            const fb2 = document.getElementById('latch-fb2');
-            const fb3 = document.getElementById('latch-fb3');
-
-            if (latchClk === 1) {
-                // Transparent Mode
-                statusText.innerText = "TRANSPARENT";
-                statusText.style.color = "var(--accent-success)";
-                latchQ = latchD;
-                
-                tg1.setAttribute('class', 'tg-symbol active');
-                tg2.setAttribute('class', 'tg-symbol inactive');
-
-                // Active Forward path
-                const activeClass = latchD === 1 ? 'wire-active' : 'wire-active-gnd';
-                w1.setAttribute('class', `wire ${activeClass}`);
-                w2.setAttribute('class', `wire ${activeClass}`);
-                w3.setAttribute('class', `wire ${activeClass}`);
-                
-                // Inactive feedback
-                fb1.setAttribute('class', 'wire');
-                fb2.setAttribute('class', 'wire');
-                fb3.setAttribute('class', 'wire');
-            } else {
-                // Hold Mode
-                statusText.innerText = "HOLD";
-                statusText.style.color = "var(--accent-secondary)";
-                
-                tg1.setAttribute('class', 'tg-symbol inactive');
-                tg2.setAttribute('class', 'tg-symbol active');
-
-                w1.setAttribute('class', 'wire');
-                w2.setAttribute('class', 'wire');
-
-                // Active feedback loop
-                const qClass = latchQ === 1 ? 'wire-active' : 'wire-active-gnd';
-                w3.setAttribute('class', `wire ${qClass}`);
-                fb1.setAttribute('class', `wire ${qClass}`);
-                fb2.setAttribute('class', `wire ${latchQ === 0 ? 'wire-active' : 'wire-active-gnd'}`); // inverter output is inverted
-                fb3.setAttribute('class', `wire ${latchQ === 0 ? 'wire-active' : 'wire-active-gnd'}`);
-            }
-
-            qValNode.innerText = latchQ;
-            qValNode.style.color = latchQ === 1 ? 'var(--accent-success)' : 'var(--accent-danger)';
-        }
-
-        // ==========================================
-        // 3. FSM Moore Sequence Detector "1101"
-        // ==========================================
-        let fsmState = "S0";
-        let fsmHistory = [];
-
-        function stepFsm(bit) {
-            fsmHistory.push(bit);
-            if (fsmHistory.length > 15) fsmHistory.shift();
-            document.getElementById('fsm-history').innerText = fsmHistory.join(' -> ');
-
-            // Calculate next state
-            let nextState = "S0";
-            switch(fsmState) {
-                case "S0":
-                    nextState = (bit === 1) ? "S1" : "S0";
-                    break;
-                case "S1":
-                    nextState = (bit === 1) ? "S2" : "S0";
-                    break;
-                case "S2":
-                    nextState = (bit === 1) ? "S2" : "S3";
-                    break;
-                case "S3":
-                    nextState = (bit === 1) ? "S4" : "S0";
-                    break;
-                case "S4":
-                    nextState = (bit === 1) ? "S2" : "S0";
-                    break;
-                default:
-                    nextState = "S0";
-            }
-
-            // Update visual active state
-            document.getElementById(`node-${fsmState.toLowerCase()}`).setAttribute('class', 'state-node');
-            fsmState = nextState;
-            document.getElementById(`node-${fsmState.toLowerCase()}`).setAttribute('class', 'state-node active');
-
-            // Update active arrow (just simple highlighter based on transitions)
-            updateFsmArrows();
-
-            // Output Y is 1 when in state S4 (Moore)
-            const yOut = (fsmState === "S4") ? 1 : 0;
-            const outputNode = document.getElementById('fsm-output');
-            outputNode.innerText = yOut;
-            outputNode.style.color = yOut === 1 ? 'var(--accent-success)' : 'var(--accent-danger)';
-        }
-
-        function updateFsmArrows() {
-            // Reset all transitions
-            const arrows = ['arr-s0-s1', 'arr-s1-s2', 'arr-s2-s3', 'arr-s3-s4'];
-            arrows.forEach(id => {
-                const arr = document.getElementById(id);
-                if (arr) arr.setAttribute('class', 'transition-arrow');
-            });
-
-            // Highlight path based on current state
-            if (fsmState === "S1") document.getElementById('arr-s0-s1').setAttribute('class', 'transition-arrow active');
-            if (fsmState === "S2") document.getElementById('arr-s1-s2').setAttribute('class', 'transition-arrow active');
-            if (fsmState === "S3") document.getElementById('arr-s2-s3').setAttribute('class', 'transition-arrow active');
-            if (fsmState === "S4") document.getElementById('arr-s3-s4').setAttribute('class', 'transition-arrow active');
-        }
-
-        function resetFsm() {
-            document.getElementById(`node-${fsmState.toLowerCase()}`).setAttribute('class', 'state-node');
-            fsmState = "S0";
-            document.getElementById('node-s0').setAttribute('class', 'state-node active');
-            fsmHistory = [];
-            document.getElementById('fsm-history').innerText = "-";
-            document.getElementById('fsm-output').innerText = "0";
-            document.getElementById('fsm-output').style.color = "var(--accent-danger)";
-            updateFsmArrows();
-        }
-
-        // ==========================================
-        // 4. STA Setup/Hold Slack Calculator
-        // ==========================================
-        function updateSta() {
-            // Read values from sliders
-            const Tclk = parseFloat(document.getElementById('slide-tclk').value);
-            const Tcq = parseFloat(document.getElementById('slide-tcq').value);
-            const Tcomb = parseFloat(document.getElementById('slide-tcomb').value);
-            const Tskew = parseFloat(document.getElementById('slide-tskew').value);
-            const Tsetup = parseFloat(document.getElementById('slide-tsetup').value);
-            const Thold = parseFloat(document.getElementById('slide-thold').value);
-
-            // Display numerical values next to headers
-            document.getElementById('val-tclk').innerText = Tclk.toFixed(2) + " ns";
-            document.getElementById('val-tcq').innerText = Tcq.toFixed(2) + " ns";
-            document.getElementById('val-tcomb').innerText = Tcomb.toFixed(2) + " ns";
-            document.getElementById('val-tskew').innerText = Tskew.toFixed(2) + " ns";
-            document.getElementById('val-tsetup').innerText = Tsetup.toFixed(2) + " ns";
-            document.getElementById('val-thold').innerText = Thold.toFixed(2) + " ns";
-
-            // Formulas:
-            // Tarrival = Tcq + Tcomb
-            const Tarrival = Tcq + Tcomb;
-
-            // Setup check:
-            // Slack_setup = Tclk + Tskew - Tcq - Tcomb - Tsetup
-            const setupSlack = Tclk + Tskew - Tarrival - Tsetup;
-
-            // Hold check:
-            // Slack_hold = Tcq + Tcomb - Tskew - Thold
-            const holdSlack = Tarrival - Tskew - Thold;
-
-            // Update UI elements
-            const setupValNode = document.getElementById('setup-slack-val');
-            const setupStatusNode = document.getElementById('setup-status');
-            setupValNode.innerText = setupSlack.toFixed(2) + " ns";
-            if (setupSlack >= 0) {
-                setupStatusNode.innerText = "MET";
-                setupStatusNode.className = "slack-status slack-met";
-                setupValNode.style.color = "var(--accent-success)";
-            } else {
-                setupStatusNode.innerText = "VIOLATED";
-                setupStatusNode.className = "slack-status slack-violated";
-                setupValNode.style.color = "var(--accent-danger)";
-            }
-
-            const holdValNode = document.getElementById('hold-slack-val');
-            const holdStatusNode = document.getElementById('hold-status');
-            holdValNode.innerText = holdSlack.toFixed(2) + " ns";
-            if (holdSlack >= 0) {
-                holdStatusNode.innerText = "MET";
-                holdStatusNode.className = "slack-status slack-met";
-                holdValNode.style.color = "var(--accent-success)";
-            } else {
-                holdStatusNode.innerText = "VIOLATED";
-                holdStatusNode.className = "slack-status slack-violated";
-                holdValNode.style.color = "var(--accent-danger)";
-            }
-
-            // Fmax calculation:
-            // Tclk_min = Tcq + Tcomb - Tskew + Tsetup
-            const TclkMin = Tcq + Tcomb - Tskew + Tsetup;
-            const Fmax = TclkMin > 0 ? (1000.0 / TclkMin) : 0;
-            document.getElementById('val-fmax').innerText = Fmax.toFixed(1) + " MHz";
-        }
-
-        // Initialize schematics on page load
-        window.onload = function() {
-            updateNandSchematic();
-            runLatchLogic();
-            updateSta();
-        };
-    </script>
 </body>
 </html>
