@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VLSI Interactive Simulation - Giai đoạn 2</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #080c14;
+            --panel-bg: rgba(15, 22, 42, 0.75);
+            --card-bg: rgba(30, 41, 59, 0.45);
+            --accent-primary: #818cf8; /* Light Indigo */
+            --accent-secondary: #06b6d4; /* Cyan */
+            --accent-success: #10b981; /* Green */
+            --accent-danger: #f43f5e; /* Rose */
+            --accent-warning: #fbbf24; /* Amber */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --shadow-glow: 0 0 25px rgba(129, 140, 248, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        header {
+            background-color: rgba(8, 12, 20, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 24px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-text span {
+            font-size: 12px;
+            color: var(--accent-secondary);
+            font-weight: 500;
+        }
+
+        .header-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s;
+        }
+
+        .header-links a:hover {
+            color: var(--text-main);
+        }
+
+        /* Container Layout */
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Document Pane (Left) */
+        .doc-pane {
+            flex: 1.1;
+            overflow-y: auto;
+            padding: 40px;
+            border-right: 1px solid var(--border-color);
+            background-color: rgba(15, 23, 42, 0.2);
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar for Doc Pane */
+        .doc-pane::-webkit-scrollbar {
+            width: 8px;
+        }
+        .doc-pane::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .doc-pane::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+        }
+        .doc-pane::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        /* Simulation Pane (Right) */
+        .sim-pane {
+            flex: 0.9;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        /* Document Styling */
+        .doc-content h1 {
+            font-size: 26px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border-left: 4px solid var(--accent-primary);
+            padding-left: 12px;
+        }
+
+        .doc-content h2 {
+            font-size: 20px;
+            margin: 35px 0 15px 0;
+            color: var(--accent-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .doc-content h3 {
+            font-size: 16px;
+            margin: 20px 0 10px 0;
+            color: #e2e8f0;
+        }
+
+        .doc-content p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            margin-bottom: 15px;
+        }
+
+        .doc-content ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .doc-content li {
+            font-size: 14.5px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .doc-content code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: rgba(255, 255, 255, 0.06);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 13.5px;
+            color: #f472b6;
+        }
+
+        .doc-content pre {
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        .doc-content pre code {
+            background: none;
+            padding: 0;
+            color: #e2e8f0;
+            font-size: 13px;
+        }
+
+        .alert-box {
+            background: rgba(244, 63, 94, 0.08);
+            border-left: 4px solid var(--accent-danger);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .alert-box.warning {
+            background: rgba(251, 191, 36, 0.08);
+            border-left: 4px solid var(--accent-warning);
+        }
+
+        .alert-box.success {
+            background: rgba(16, 185, 129, 0.08);
+            border-left: 4px solid var(--accent-success);
+        }
+
+        .alert-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Simulation Controls Dashboard */
+        .sim-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .sim-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sim-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 8px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            font-size: 12.5px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            color: var(--text-main);
+            background: var(--card-bg);
+        }
+
+        .sim-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* Interactive cards styling */
+        .sim-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-secondary);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent-primary), #6366f1);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-sec {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-sec:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Animation specific elements */
+        .register-chain {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .reg-box {
+            border: 2px solid var(--text-muted);
+            border-radius: 6px;
+            width: 70px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        .reg-box.active {
+            border-color: var(--accent-success);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+        }
+
+        .reg-title {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .reg-val {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .signal-arrow {
+            font-size: 20px;
+            color: var(--text-muted);
+            animation: pulse-arrow 1.5s infinite;
+        }
+
+        @keyframes pulse-arrow {
+            0% { opacity: 0.3; transform: translateX(-3px); }
+            50% { opacity: 1; transform: translateX(3px); }
+            100% { opacity: 0.3; transform: translateX(-3px); }
+        }
+
+        /* UART Oversampling Visualization */
+        .oversample-grid {
+            display: grid;
+            grid-template-columns: repeat(16, 1fr);
+            gap: 2px;
+            margin: 15px 0;
+        }
+
+        .sample-cell {
+            height: 35px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 9px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            transition: all 0.2s;
+        }
+
+        .sample-cell.active {
+            background: var(--accent-secondary);
+            color: black;
+            font-weight: bold;
+        }
+
+        .sample-cell.sample-point {
+            border: 2px solid var(--accent-success);
+            box-shadow: inset 0 0 6px rgba(16, 185, 129, 0.5);
+        }
+
+        /* SPI Interactive Waveform */
+        .waveform-container {
+            background: #090d16;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .wave-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .wave-label {
+            width: 50px;
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+
+        .wave-svg {
+            flex: 1;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        /* Timer Auto-reload display */
+        .timer-display {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .timer-digit-box {
+            text-align: center;
+        }
+
+        .timer-digit-lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .timer-digit-val {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .irq-led {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #3f3f46;
+            box-shadow: 0 0 0 rgba(244, 63, 94, 0);
+            transition: all 0.1s;
+        }
+
+        .irq-led.active {
+            background-color: var(--accent-danger);
+            box-shadow: 0 0 15px var(--accent-danger);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent-primary);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area">
+            <i class="fa-solid fa-microchip logo-icon"></i>
+            <div class="logo-text">
+                <h1>VLSI INTERACTIVE DASHBOARD</h1>
+                <span>Giai đoạn 2: Thiết kế HDL & Ngoại vi nhúng</span>
+            </div>
+        </div>
+        <div class="header-links">
+            <a href="https://github.com" target="_blank">
+                <i class="fa-brands fa-github"></i> GitHub Repository
+            </a>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Left Document Pane -->
+        <div class="doc-pane">
+            <div class="doc-content">
+                <h1>TÀI LIỆU CHUYÊN SÂU: GIAI ĐOẠN 2</h1>
+                <p><strong>Nội dung:</strong> Làm chủ ngôn ngữ Verilog HDL, thiết kế FSM tối ưu và xây dựng các khối ngoại vi phần cứng cơ bản (UART, SPI, Timer) sẵn sàng tổng hợp mạch trên Silicon.</p>
+
+                <h2>1. Wire vs. Reg trong Verilog</h2>
+                <p>Một trong những nhầm lẫn lớn nhất của kỹ sư phần mềm chuyển sang vi mạch là xem <code>reg</code> như một thanh ghi phần cứng thực tế. Thực chất:</p>
+                <ul>
+                    <li><code>wire</code> đại diện cho các kết nối vật lý tức thời (cổng logic, dây dẫn).</li>
+                    <li><code>reg</code> chỉ đơn giản là kiểu dữ liệu giữ giá trị trong mô phỏng, có thể tổng hợp thành mạch tổ hợp (combinational logic) hoặc mạch tuần tự (D-Flip-Flop).</li>
+                </ul>
+                <div class="alert-box warning">
+                    <div class="alert-title"><i class="fa-solid fa-triangle-exclamation"></i> Quy tắc thiết kế</div>
+                    <p>Chỉ sử dụng phép gán nghẽn <code>=</code> cho khối logic tổ hợp (<code>always @(*)</code>) và phép gán không nghẽn <code>&lt;=</code> cho khối logic tuần tự (<code>always @(posedge clk)</code>).</p>
+                </div>
+
+                <h2>2. Lỗi Chốt ngoài ý muốn (Inferred Latch)</h2>
+                <p>Nếu trong khối logic tổ hợp, một biến không được gán giá trị tại tất cả các nhánh rẽ điều kiện (như thiếu <code>else</code> hoặc <code>default</code>), trình biên dịch buộc phải sinh ra một latch vật lý để lưu lại giá trị cũ của biến đó.</p>
+                <p>Latch tự động gây ra các vấn đề nghiêm trọng về Timing (phân tích STA), gây lỗi hoạt động thực tế trên silicon khác hoàn toàn mô phỏng.</p>
+
+                <h2>3. Thiết kế FSM 3 khối (3-Always Block)</h2>
+                <p>Quy trình viết FSM chuẩn công nghiệp được khuyến nghị chia thành 3 khối logic riêng biệt:</p>
+                <ol>
+                    <li><strong>Khối cập nhật trạng thái (Tuần tự):</strong> Lưu trữ trạng thái hiện tại vào các Flip-flop.</li>
+                    <li><strong>Khối chuyển đổi trạng thái tiếp theo (Tổ hợp):</strong> Giải mã ngõ vào để tính toán <code>next_state</code>.</li>
+                    <li><strong>Khối ngõ ra (Tổ hợp/Tuần tự):</strong> Định nghĩa các tín hiệu điều khiển đầu ra dựa vào trạng thái.</li>
+                </ol>
+
+                <h2>4. UART Oversampling 16x</h2>
+                <p>Khi nhận dữ liệu bất đồng bộ (RX), bộ thu không có xung Clock đi kèm từ bộ phát. Để bắt đúng thời điểm truyền bit, bộ nhận UART RX chạy xung clock nhanh gấp 16 lần tốc độ Baud của luồng dữ liệu truyền:</p>
+                <ul>
+                    <li>Khi phát hiện sườn xuống (Start bit), bộ đếm bắt đầu đếm.</li>
+                    <li>Tại mẫu thứ 7 (giữa Start bit), kiểm tra xem đường truyền còn thấp không để tránh nhiễu.</li>
+                    <li>Tại mẫu thứ 23, 39, 55 (giữa các bit dữ liệu tiếp theo), tiến hành chốt dữ liệu (Sample point).</li>
+                </ul>
+
+                <h2>5. Giao thức SPI Master</h2>
+                <p>SPI là giao tiếp đồng bộ bốn dây (CS, SCK, MOSI, MISO) chạy theo cơ chế dịch dữ liệu vòng tròn 2 chiều (Shift Register) theo 4 chế độ hoạt động chính phụ thuộc vào <code>CPOL</code> (cực tính xung nhịp) và <code>CPHA</code> (pha lấy mẫu xung nhịp).</p>
+            </div>
+        </div>
+
+        <!-- Right Simulation Pane -->
+        <div class="sim-pane">
+            <div class="sim-header">
+                <div class="sim-title">
+                    <i class="fa-solid fa-flask"></i> Interactive Simulator
+                </div>
+                <div class="sim-tabs">
+                    <button class="tab-btn active" onclick="switchSimTab('tab-assign')">Verilog Gán</button>
+                    <button class="tab-btn" onclick="switchSimTab('tab-uart')">UART 16x</button>
+                    <button class="tab-btn" onclick="switchSimTab('tab-spi')">SPI Modes</button>
+                    <button class="tab-btn" onclick="switchSimTab('tab-timer')">Timer AutoReload</button>
+                </div>
+            </div>
+
+            <div class="sim-body">
+                <!-- Tab 1: Blocking vs Non-blocking Simulation -->
+                <div id="tab-assign" class="sim-tab-content">
+                    <div class="sim-card">
+                        <div class="card-header">
+                            <span class="card-title">Mô phỏng phép gán Blocking (=) vs Non-blocking (<=)</span>
+                        </div>
+                        <p style="font-size: 13px; color: var(--text-muted);">
+                            Chọn loại phép gán và bấm "Xung nhịp (Clock Edge)" để xem dữ liệu truyền từ <strong>A</strong> sang <strong>B</strong> và <strong>C</strong>.
+                        </p>
+                        
+                        <div class="form-group">
+                            <label>Kiểu Phép Gán (Assignment Style)</label>
+                            <select id="assign-type" onchange="resetAssignSim()">
+                                <option value="blocking">Blocking (=) - Tức thời/Tuần tự</option>
+                                <option value="nonblocking">Non-blocking (<=) - Đồng thời/Thanh ghi dịch</option>
+                            </select>
+                        </div>
+
+                        <div class="register-chain">
+                            <div class="reg-box active">
+                                <span class="reg-title">Input A</span>
+                                <span class="reg-val" id="reg-a">1</span>
+                            </div>
+                            <i class="fa-solid fa-arrow-right signal-arrow"></i>
+                            <div class="reg-box" id="box-b">
+                                <span class="reg-title">Reg B</span>
+                                <span class="reg-val" id="reg-b">0</span>
+                            </div>
+                            <i class="fa-solid fa-arrow-right signal-arrow"></i>
+                            <div class="reg-box" id="box-c">
+                                <span class="reg-title">Reg C</span>
+                                <span class="reg-val" id="reg-c">0</span>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" onclick="triggerClockPulse()"><i class="fa-solid fa-bolt"></i> Clock Pulse</button>
+                            <button class="btn btn-sec" onclick="toggleInputA()">Đảo giá trị A</button>
+                            <button class="btn btn-sec" onclick="resetAssignSim()">Reset</button>
+                        </div>
+
+                        <div style="background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; font-family: monospace; font-size: 12px;">
+                            <strong>Mô tả hoạt động:</strong>
+                            <div id="assign-desc" style="color: var(--accent-secondary); margin-top: 5px;">
+                                A thay đổi sẽ cập nhật B, sau đó B cập nhật C ngay trong chu kỳ hiện tại.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: UART 16x Oversampling -->
+                <div id="tab-uart" class="sim-tab-content" style="display:none;">
+                    <div class="sim-card">
+                        <div class="card-header">
+                            <span class="card-title">UART Receiver 16x Oversampling</span>
+                        </div>
+                        <p style="font-size: 13px; color: var(--text-muted);">
+                            Nhấn "Chạy mô phỏng" để xem bộ nhận phát hiện Start Bit và lấy mẫu tại mẫu thứ 7 (mid-point), tiếp theo là 23 (bit data 0), 39 (bit data 1)...
+                        </p>
+
+                        <div class="oversample-grid" id="uart-grid">
+                            <!-- JS will populate 16 cells -->
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted);">
+                            <span>Mẫu: 0 (Start bit sườn xuống)</span>
+                            <span>Mẫu 7 (Sample Point)</span>
+                            <span>Mẫu 15 (Hết Bit)</span>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button class="btn" id="btn-uart-start" onclick="startUartSim()"><i class="fa-solid fa-play"></i> Bắt đầu nhận</button>
+                            <button class="btn btn-sec" onclick="resetUartSim()">Reset</button>
+                        </div>
+
+                        <div id="uart-status" style="background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; font-family: monospace; font-size: 12px; color: var(--accent-warning);">
+                            Trạng thái: Đang chờ Start Bit sườn xuống...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: SPI Clock Polar/Phase -->
+                <div id="tab-spi" class="sim-tab-content" style="display:none;">
+                    <div class="sim-card">
+                        <div class="card-header">
+                            <span class="card-title">SPI Waveform Generator & CPOL/CPHA Config</span>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>CPOL (Cực tính xung nhịp)</label>
+                                <select id="spi-cpol" onchange="drawSpiWaveform()">
+                                    <option value="0">0 (Nhàn rỗi = Mức thấp)</option>
+                                    <option value="1">1 (Nhàn rỗi = Mức cao)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>CPHA (Pha xung nhịp)</label>
+                                <select id="spi-cpha" onchange="drawSpiWaveform()">
+                                    <option value="0">0 (Lấy mẫu ở sườn đầu tiên)</option>
+                                    <option value="1">1 (Lấy mẫu ở sườn thứ hai)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="waveform-container">
+                            <div class="wave-row">
+                                <div class="wave-label">CS</div>
+                                <svg class="wave-svg" id="svg-cs"></svg>
+                            </div>
+                            <div class="wave-row">
+                                <div class="wave-label">SCK</div>
+                                <svg class="wave-svg" id="svg-sck"></svg>
+                            </div>
+                            <div class="wave-row">
+                                <div class="wave-label">MOSI</div>
+                                <svg class="wave-svg" id="svg-mosi"></svg>
+                            </div>
+                        </div>
+
+                        <div style="font-size: 12px; color: var(--accent-success); font-family: monospace;" id="spi-mode-desc">
+                            Đang hiển thị dạng sóng SPI Mode 0 (CPOL=0, CPHA=0). Lấy mẫu tại sườn lên của SCK.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Timer AutoReload -->
+                <div id="tab-timer" class="sim-tab-content" style="display:none;">
+                    <div class="sim-card">
+                        <div class="card-header">
+                            <span class="card-title">Timer 32-bit Auto-reload Simulator</span>
+                        </div>
+                        <p style="font-size: 13px; color: var(--text-muted);">
+                            Mô phỏng đếm lùi bộ đếm. Khi chạm ngưỡng 0, bộ đếm tự động nạp lại giá trị giới hạn và nháy đèn ngắt IRQ.
+                        </p>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>Reload Value</label>
+                                <input type="number" id="timer-reload-input" value="10" min="2" max="100" onchange="updateTimerReload()">
+                            </div>
+                            <div class="form-group" style="align-items: center; justify-content: center; flex-direction: row; gap: 15px;">
+                                <div>
+                                    <div class="timer-digit-lbl">IRQ LED</div>
+                                    <div class="irq-led" id="timer-irq-led"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="timer-display">
+                            <div class="timer-digit-box">
+                                <div class="timer-digit-lbl">Thanh ghi Reload</div>
+                                <div class="timer-digit-val" id="lbl-reload">10</div>
+                            </div>
+                            <div class="timer-digit-box">
+                                <div class="timer-digit-lbl">Bộ đếm Counter</div>
+                                <div class="timer-digit-val" id="lbl-counter">10</div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn" id="btn-timer-run" onclick="toggleTimer()"><i class="fa-solid fa-play"></i> Chạy Tự Động</button>
+                            <button class="btn btn-sec" onclick="stepTimer()"><i class="fa-solid fa-forward-step"></i> Step</button>
+                            <button class="btn btn-sec" onclick="resetTimerSim()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchSimTab(tabId) {
+            const tabs = document.getElementsByClassName('sim-tab-content');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].style.display = 'none';
+            }
+            document.getElementById(tabId).style.display = 'block';
+
+            // Update tab button classes
+            const btns = document.getElementsByClassName('tab-btn');
+            for (let i = 0; i < btns.length; i++) {
+                btns[i].classList.remove('active');
+            }
+            event.target.classList.add('active');
+
+            if (tabId === 'tab-spi') {
+                drawSpiWaveform();
+            }
+        }
+
+        // ==========================================
+        // 1. Verilog Gán Logic
+        // ==========================================
+        let valA = 1;
+        let valB = 0;
+        let valC = 0;
+
+        function toggleInputA() {
+            valA = valA === 1 ? 0 : 1;
+            document.getElementById('reg-a').innerText = valA;
+        }
+
+        function resetAssignSim() {
+            valB = 0;
+            valC = 0;
+            document.getElementById('reg-b').innerText = valB;
+            document.getElementById('reg-c').innerText = valC;
+            document.getElementById('box-b').classList.remove('active');
+            document.getElementById('box-c').classList.remove('active');
+            
+            const assignType = document.getElementById('assign-type').value;
+            const desc = document.getElementById('assign-desc');
+            if (assignType === 'blocking') {
+                desc.innerText = "Blocking (=): Thay đổi từ A lan truyền trực tiếp ngay lập tức sang B rồi đến C trong cùng chu kỳ.";
+            } else {
+                desc.innerText = "Non-blocking (<=): Giá trị của A được lên lịch gán cho B, giá trị cũ của B được lên lịch gán cho C. Tất cả cập nhật đồng thời khi xung clock xuất hiện.";
+            }
+        }
+
+        function triggerClockPulse() {
+            const assignType = document.getElementById('assign-type').value;
+            
+            if (assignType === 'blocking') {
+                // Blocking assignments run sequentially, taking the newly assigned value immediately
+                valB = valA;
+                valC = valB;
+            } else {
+                // Non-blocking evaluates all RHS first, then assigns
+                const oldB = valB;
+                valB = valA;
+                valC = oldB;
+            }
+
+            document.getElementById('reg-b').innerText = valB;
+            document.getElementById('reg-c').innerText = valC;
+
+            // Highlight boxes
+            document.getElementById('box-b').classList.add('active');
+            document.getElementById('box-c').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('box-b').classList.remove('active');
+                document.getElementById('box-c').classList.remove('active');
+            }, 500);
+        }
+
+        // ==========================================
+        // 2. UART 16x Simulator
+        // ==========================================
+        let uartInterval = null;
+        let uartStep = 0;
+
+        function initUartGrid() {
+            const grid = document.getElementById('uart-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 16; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'sample-cell';
+                cell.id = `uart-cell-${i}`;
+                cell.innerText = i;
+                grid.appendChild(cell);
+            }
+            // Mark sample points (7 is mid point of start bit)
+            document.getElementById('uart-cell-7').classList.add('sample-point');
+        }
+
+        function resetUartSim() {
+            clearInterval(uartInterval);
+            uartInterval = null;
+            uartStep = 0;
+            initUartGrid();
+            document.getElementById('uart-status').innerText = "Trạng thái: Đang chờ Start Bit...";
+            document.getElementById('uart-status').style.color = "var(--accent-warning)";
+            document.getElementById('btn-uart-start').disabled = false;
+        }
+
+        function startUartSim() {
+            resetUartSim();
+            document.getElementById('btn-uart-start').disabled = true;
+            document.getElementById('uart-status').innerText = "Trạng thái: Sườn xuống được phát hiện! Bắt đầu lấy mẫu...";
+            document.getElementById('uart-status').style.color = "var(--accent-secondary)";
+
+            uartInterval = setInterval(() => {
+                if (uartStep < 16) {
+                    const prevCell = document.getElementById(`uart-cell-${uartStep - 1}`);
+                    if (prevCell) prevCell.classList.remove('active');
+                    
+                    const cell = document.getElementById(`uart-cell-${uartStep}`);
+                    cell.classList.add('active');
+
+                    if (uartStep === 7) {
+                        document.getElementById('uart-status').innerText = "Trạng thái: Chốt mẫu tại 7 (MID-POINT). Xác nhận Start Bit thành công!";
+                        document.getElementById('uart-status').style.color = "var(--accent-success)";
+                    }
+                    uartStep++;
+                } else {
+                    clearInterval(uartInterval);
+                    document.getElementById('uart-status').innerText = "Trạng thái: Nhận xong Start Bit. Chuyển sang nhận Bit dữ liệu D0...";
+                }
+            }, 150);
+        }
+
+        // ==========================================
+        // 3. SPI Modes Drawing (SVG)
+        // ==========================================
+        function drawSpiWaveform() {
+            const cpol = parseInt(document.getElementById('spi-cpol').value);
+            const cpha = parseInt(document.getElementById('spi-cpha').value);
+            
+            // Descriptions
+            const modeDesc = document.getElementById('spi-mode-desc');
+            const mode = (cpol << 1) | cpha;
+            let sampleExplanation = "";
+            if (mode === 0) sampleExplanation = "SPI Mode 0: SCK nhàn rỗi ở mức 0. Dữ liệu lấy mẫu ở sườn lên (Rising) đầu tiên.";
+            if (mode === 1) sampleExplanation = "SPI Mode 1: SCK nhàn rỗi ở mức 0. Dữ liệu lấy mẫu ở sườn xuống (Falling) đầu tiên.";
+            if (mode === 2) sampleExplanation = "SPI Mode 2: SCK nhàn rỗi ở mức 1. Dữ liệu lấy mẫu ở sườn xuống (Falling) đầu tiên.";
+            if (mode === 3) sampleExplanation = "SPI Mode 3: SCK nhàn rỗi ở mức 1. Dữ liệu lấy mẫu ở sườn lên (Rising) đầu tiên.";
+            modeDesc.innerText = sampleExplanation;
+
+            // SVGs
+            const svgCS = document.getElementById('svg-cs');
+            const svgSCK = document.getElementById('svg-sck');
+            const svgMOSI = document.getElementById('svg-mosi');
+
+            // Dimensions
+            const w = svgCS.clientWidth || 300;
+            const h = 40;
+
+            // Draw CS (Active Low)
+            svgCS.innerHTML = `<path d="M 0,10 L 30,10 L 30,30 L ${w-30},30 L ${w-30},10 L ${w},10" fill="none" stroke="var(--accent-danger)" stroke-width="2"/>`;
+
+            // Draw SCK depending on CPOL/CPHA
+            let sckPath = `M 0,${cpol === 0 ? 30 : 10} L 40,${cpol === 0 ? 30 : 10}`;
+            let sampleDots = "";
+            for (let i = 0; i < 4; i++) {
+                const xStart = 40 + i * 50;
+                const xMid = xStart + 25;
+                const xEnd = xStart + 50;
+                
+                // Clock period
+                if (cpol === 0) {
+                    sckPath += ` L ${xStart},30 L ${xStart},10 L ${xMid},10 L ${xMid},30 L ${xEnd},30`;
+                } else {
+                    sckPath += ` L ${xStart},10 L ${xStart},30 L ${xMid},30 L ${xMid},10 L ${xEnd},10`;
+                }
+
+                // Sample points based on CPHA
+                let sampleX = 0;
+                if (cpha === 0) {
+                    sampleX = xStart; // First edge (rising for CPOL=0, falling for CPOL=1)
+                } else {
+                    sampleX = xMid;   // Second edge
+                }
+                sampleDots += `<circle cx="${sampleX}" cy="${cpol === 0 ? 20 : 20}" r="4" fill="var(--accent-success)"/>`;
+            }
+            sckPath += ` L ${w},${cpol === 0 ? 30 : 10}`;
+            svgSCK.innerHTML = `<path d="${sckPath}" fill="none" stroke="var(--accent-primary)" stroke-width="2"/>` + sampleDots;
+
+            // Draw MOSI Data Shift
+            let mosiPath = "M 0,20 L 35,20";
+            for (let i = 0; i < 4; i++) {
+                const xStart = 40 + i * 50;
+                const xEnd = xStart + 50;
+                // Hexagonal data bits representation
+                mosiPath += ` L ${xStart+5},12 L ${xEnd-5},12 L ${xEnd},20 L ${xStart+5},28 L ${xEnd-5},28 L ${xEnd},20`;
+            }
+            mosiPath += ` L ${w},20`;
+            svgMOSI.innerHTML = `<path d="${mosiPath}" fill="none" stroke="var(--accent-secondary)" stroke-width="1.5"/>`;
+        }
+
+        // ==========================================
+        // 4. Timer AutoReload
+        // ==========================================
+        let timerReload = 10;
+        let timerCounter = 10;
+        let timerRunning = false;
+        let timerInterval = null;
+
+        function updateTimerReload() {
+            timerReload = parseInt(document.getElementById('timer-reload-input').value);
+            document.getElementById('lbl-reload').innerText = timerReload;
+            if (!timerRunning) {
+                timerCounter = timerReload;
+                document.getElementById('lbl-counter').innerText = timerCounter;
+            }
+        }
+
+        function resetTimerSim() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerRunning = false;
+            document.getElementById('btn-timer-run').innerHTML = `<i class="fa-solid fa-play"></i> Chạy Tự Động`;
+            timerCounter = timerReload;
+            document.getElementById('lbl-counter').innerText = timerCounter;
+            document.getElementById('timer-irq-led').classList.remove('active');
+        }
+
+        function stepTimer() {
+            const led = document.getElementById('timer-irq-led');
+            led.classList.remove('active');
+
+            if (timerCounter === 0) {
+                timerCounter = timerReload;
+                led.classList.add('active'); // trigger IRQ
+            } else {
+                timerCounter--;
+            }
+            document.getElementById('lbl-counter').innerText = timerCounter;
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('btn-timer-run');
+            if (timerRunning) {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> Chạy Tự Động`;
+            } else {
+                timerRunning = true;
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i> Dừng`;
+                timerInterval = setInterval(stepTimer, 500);
+            }
+        }
+
+        // Initialize elements on load
+        window.onload = function() {
+            resetAssignSim();
+            initUartGrid();
+            drawSpiWaveform();
+            updateTimerReload();
+        };
+    </script>
+</body>
+</html>
